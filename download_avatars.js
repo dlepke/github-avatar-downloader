@@ -7,11 +7,21 @@ var request = require('request');
 var fs = require('fs');
 
 
+var repoOwnerArg = process.argv[2];
+var repoNameArg = process.argv[3];
+
+
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
 
 function getRepoContributors(repoOwner, repoName, cb) {
+
+  if (!repoOwner || !repoName) {
+    console.log('Please enter a valid Owner and Repo entry');
+    return;
+  }
+
   var requestURL = 'https://' + GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
   var options = {
     url: requestURL,
@@ -47,13 +57,13 @@ function makeUseOfContributorList(err, result) {
   } else {
     for (var i in result) {
       var avatarURL = result[i].avatar_url;
-      downloadImageByURL(avatarURL, `avatarURL${i}`)
+      downloadImageByURL(avatarURL, `avatars/avatarURL${i}`)
     }
   }
 }
 
 
-getRepoContributors('jquery', 'jquery', makeUseOfContributorList);
+getRepoContributors(repoOwnerArg, repoNameArg, makeUseOfContributorList);
 
 
 
