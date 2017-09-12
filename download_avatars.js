@@ -1,12 +1,14 @@
+require('dotenv').config();
+
 var GITHUB_USER = "dlepke";
-var GITHUB_TOKEN = 'bd7d12aeca4d275ca9537c311c7aa1a9c37155dc';
-
-
+var GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 var request = require('request');
+var fs = require('fs');
+
+
 
 console.log('Welcome to the GitHub Avatar Downloader!');
-
 
 
 function getRepoContributors(repoOwner, repoName, cb) {
@@ -45,10 +47,22 @@ function makeUseOfContributorList(err, result) {
   } else {
     for (var i in result) {
       var avatarURL = result[i].avatar_url;
-      console.log(avatarURL);
+      downloadImageByURL(avatarURL, `avatarURL${i}`)
     }
   }
 }
 
 
 getRepoContributors('jquery', 'jquery', makeUseOfContributorList);
+
+
+
+function downloadImageByURL(url, filePath) {
+  request.get(url)
+  .pipe(fs.createWriteStream(filePath));
+}
+
+
+
+
+
