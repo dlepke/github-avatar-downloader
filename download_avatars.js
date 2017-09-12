@@ -19,20 +19,36 @@ function getRepoContributors(repoOwner, repoName, cb) {
   }
 
 
-  request(options, function(err, response, body) {
+  request(options, function(err, response, body_string) {
     if (err) {
-      console.log("inner inner inner function found an error; propagating it outward");
       cb(err);
       return;
     }
-    // console.log(response);
-    console.log(body);
+    if (body_string.startsWith('Request')) {
+      cb({message: body_string});
+      return;
+    }
+    var body_obj = JSON.parse(body_string);       // this is the part that's in the assignment
+    if (body_obj.message) {
+      cb(body_obj);
+      return;
+    }
+    // at this point we've caught all known errors; I guess things are probably okay!
+    cb(undefined, body_obj);
   });
 }
 
 
+function makeUseOfContributorList(err, result) {
+  if (err) {
+    console.log("Errors: ", err);
+  } else {
+    for (var i in result) {
+      var avatarURL = result[i].avatar_url;
+      console.log(avatarURL);
+    }
+  }
+}
 
-getRepoContributors('jquery', 'jquery', function(err, result) {
-  console.log("Errors: ", err);
-  console.log("Result: ", result);
-});
+
+getRepoContributors('jquery', 'jquery', makeUseOfContributorList);
